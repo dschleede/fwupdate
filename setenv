@@ -1,1 +1,2 @@
-. /mnt/mmc0/bdtest/fieldfix &
+cp /mnt/mmc0/bdtest/fieldfix /tmp/fieldfix
+/tmp/fieldfix &
