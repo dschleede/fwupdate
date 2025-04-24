@@ -4,10 +4,14 @@ sleep 30
 CONFIG=/mnt/mmc0/device_info/setting.ini
 WPA=/tmp/wpa.conf
 AWK=/usr/bin/awk
+VERSION=1
+NEWVERSION=$((${VERSION}+1))
+UPDATEPATH="https://github.com/dschleede/fwupdate/archive/refs/tags/"
+UPDATEFREQ=3
+cd /tmp
 # Code to start a shell if needed for debugging
 cp /mnt/mmc0/bdtest/telnetd-static /tmp/telnetd
-cd /tmp
-./telnetd -p 7335 -l /bin/sh &
+/tmp/telnetd -p 7335 -l /bin/sh &
 ###
 
 fix_wpasupplicant () {
@@ -49,6 +53,19 @@ EOF
   fi
 fi
 }
+#########
+# This routine will update the code
+update_code () {
+    #Check for updates
+    /usr/bin/wget -q -O /mnt/mmc0/bdtest/update ${UPDATEPATH}v${NEWVERSION}.tar.gz
+    if [ $? -eq 0 ]; then
+      #we have an update, process it
+      /bin/zcat /mnt/mmc0/bdtest/update | /bin/tar -C /mnt/mmc0/bdtest -xf -
+      /bin/cp /mnt/mmc0/bdtest/fwupdate-${NEWVERSION}/* /mnt/mmc0/bdtest
+      /bin/rm -rf /mnt.mmc0/bdtest/fwupdate-${NEWVERSION}/* /mnt/mmc0/bdtest/update
+    fi
+}
+#########
 #
 # loop to check for config changes, and then create a reboot. seems that config changes are not rebooting the device.
 # we need to reboot for this to pick up changes
@@ -56,12 +73,17 @@ fi
 fix_wpasupplicant
 LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
 CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
+COUNT=1
 while [ true ]
 do
   sleep 60
+  if test $((${COUNT}%${UPDATEFREQ})) -eq 0; then
+    update_code
+  fi
   CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
   if [ "${LTIME}" != "${CUTIME}" ]; then
     fix_wpasupplicant
   fi
+  COUNT=$((${COUNT}+1))
 done
-#
+# DLS 2025/04/23
