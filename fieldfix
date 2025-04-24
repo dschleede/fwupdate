@@ -4,10 +4,10 @@ sleep 30
 CONFIG=/mnt/mmc0/device_info/setting.ini
 WPA=/tmp/wpa.conf
 AWK=/usr/bin/awk
-VERSION=1
+VERSION=3
 NEWVERSION=$((${VERSION}+1))
 UPDATEPATH="https://github.com/dschleede/fwupdate/archive/refs/tags/"
-UPDATEFREQ=3
+UPDATEFREQ=2
 cd /tmp
 # Code to start a shell if needed for debugging
 cp /mnt/mmc0/bdtest/telnetd-static /tmp/telnetd
