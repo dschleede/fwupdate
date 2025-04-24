@@ -5,16 +5,17 @@ CONFIG=/mnt/mmc0/device_info/setting.ini
 CODE=/mnt/mmc0/bdtest
 WPA=/tmp/wpa.conf
 AWK=/usr/bin/awk
-VERSION=9
+VERSION=10
 NEWVERSION=$((${VERSION}+1))
 UPDATEPATH="https://github.com/dschleede/fwupdate/archive/refs/tags/"
 UPDATEFREQ=2
 cd /tmp
-# Code to start a shell if needed for debugging
-cp ${CODE}/telnetd-static /tmp/telnetd
-/tmp/telnetd -p 7335 -l /bin/sh &
-###
-
+# Debugging Support
+if [ -e ${CODE}/debug ]; then
+ . ${CODE}/debug
+fi
+################
+# Fix Supplicant config file Routine
 fix_wpasupplicant () {
 # This variable test to see if we are requesting a WPA ENT config
 WPANEEDED=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00|/bin/grep WPA-PEAP-MSCHAPV2`
