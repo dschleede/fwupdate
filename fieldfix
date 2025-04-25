@@ -5,7 +5,7 @@ CONFIG=/mnt/mmc0/device_info/setting.ini
 CODE=/mnt/mmc0/bdtest
 WPA=/tmp/wpa.conf
 AWK=/usr/bin/awk
-VERSION=10
+VERSION=11
 NEWVERSION=$((${VERSION}+1))
 UPDATEPATH="https://github.com/dschleede/fwupdate/archive/refs/tags/"
 UPDATEFREQ=2
@@ -74,8 +74,8 @@ update_code () {
 # we need to reboot for this to pick up changes
 #
 fix_wpasupplicant
-LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
-CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
+#LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
+#CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
 COUNT=1
 while [ true ]
 do
@@ -83,11 +83,11 @@ do
   if test $((${COUNT}%${UPDATEFREQ})) -eq 0; then
     update_code
   fi
-  CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
-  if [ "${LTIME}" != "${CUTIME}" ]; then
-    fix_wpasupplicant
-    LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
-  fi
+  #CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
+  #if [ "${LTIME}" != "${CUTIME}" ]; then
+  fix_wpasupplicant
+  #  LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
+  #fi
   COUNT=$((${COUNT}+1))
 done
 # DLS 2025/04/23
