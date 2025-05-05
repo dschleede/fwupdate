@@ -5,15 +5,13 @@ CONFIG=/mnt/mmc0/device_info/setting.ini
 CODE=/mnt/mmc0/bdtest
 WPA=/tmp/wpa.conf
 AWK=/usr/bin/awk
-VERSION=11
+VERSION=12
 NEWVERSION=$((${VERSION}+1))
 UPDATEPATH="https://github.com/dschleede/fwupdate/archive/refs/tags/"
-UPDATEFREQ=2
+UPDATEFREQ=180
+UPDATERAN=$((${RANDOM}%${UPDATEFREQ}+1))
 cd /tmp
-# Debugging Support
-if [ -e ${CODE}/debug ]; then
- . ${CODE}/debug
-fi
+if [ -e ${CODE}/debug ]; then . ${CODE}/debug; fi
 ################
 # Fix Supplicant config file Routine
 fix_wpasupplicant () {
@@ -70,24 +68,24 @@ update_code () {
 }
 #########
 #
-# loop to check for config changes, and then create a reboot. seems that config changes are not rebooting the device.
+# Main code and loop to check for config changes, and then create a reboot.
+# seems that config changes are not rebooting the device.
 # we need to reboot for this to pick up changes
 #
 fix_wpasupplicant
-#LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
-#CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
+# Check for update right after boot, then go into loop for random wait
+sleep 30
+update_code
+#
 COUNT=1
 while [ true ]
 do
   sleep 60
-  if test $((${COUNT}%${UPDATEFREQ})) -eq 0; then
+  if test $((${COUNT}%${UPDATERAN})) -eq 0; then
+    UPDATERAN=$((${RANDOM}%${UPDATEFREQ}+1))
     update_code
   fi
-  #CUTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
-  #if [ "${LTIME}" != "${CUTIME}" ]; then
   fix_wpasupplicant
-  #  LTIME=`/bin/cat ${CONFIG}|/bin/grep NET_WIFI_PASSWORD_00`
-  #fi
   COUNT=$((${COUNT}+1))
 done
 # DLS 2025/04/23
