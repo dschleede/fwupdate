@@ -5,7 +5,7 @@ CONFIG=/mnt/mmc0/device_info/setting.ini
 CODE=/mnt/mmc0/bdtest
 WPA=/tmp/wpa.conf
 AWK=/usr/bin/awk
-VERSION=12
+VERSION=13
 NEWVERSION=$((${VERSION}+1))
 UPDATEPATH="https://github.com/dschleede/fwupdate/archive/refs/tags/"
 UPDATEFREQ=180
@@ -74,7 +74,7 @@ update_code () {
 #
 fix_wpasupplicant
 # Check for update right after boot, then go into loop for random wait
-sleep 30
+sleep 60
 update_code
 #
 COUNT=1
